@@ -5,12 +5,24 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <h3>Hide YouTube Shorts</h3>
 
-  <label class="switch">
-    <input type="checkbox" id="toggle">
-    <span class="slider"></span>
-  </label>
+  <h3>YouTube Cleaner</h3>
+
+  <div class="row">
+    <span>Shorts</span>
+    <label class="switch">
+      <input type="checkbox" id="toggleShorts">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="row">
+    <span>Home Feed</span>
+    <label class="switch">
+      <input type="checkbox" id="toggleHome">
+      <span class="slider"></span>
+    </label>
+  </div>
 
   <script src="popup.js"></script>
 </body>

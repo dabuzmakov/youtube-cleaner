@@ -1,9 +1,18 @@
-const toggle = document.getElementById('toggle');
+const $ = (id) => document.getElementById(id);
 
-chrome.storage.sync.get(['hideShorts'], (result) => {
-  toggle.checked = result.hideShorts ?? false;
+const toggles = {
+  hideShorts: $('toggleShorts'),
+  hideHome: $('toggleHome')
+};
+
+chrome.storage.sync.get(Object.keys(toggles), (data) => {
+  for (const key in toggles) {
+    toggles[key].checked = data[key] ?? false;
+  }
 });
 
-toggle.addEventListener('change', () => {
-  chrome.storage.sync.set({ hideShorts: toggle.checked });
-});
+for (const key in toggles) {
+  toggles[key].addEventListener('change', () => {
+    chrome.storage.sync.set({ [key]: toggles[key].checked });
+  });
+}

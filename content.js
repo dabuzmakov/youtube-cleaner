@@ -1,46 +1,43 @@
-const HIDE_CLASS = 'hide-shorts-extension';
+const STYLE_ID = 'yt-cleaner';
 
-function applyHide(hide) {
-  let style = document.getElementById(HIDE_CLASS);
+function updateStyles({ hideShorts, hideHome }) {
+  let style = document.getElementById(STYLE_ID);
 
-  if (hide && !style) {
+  if (!hideShorts && !hideHome) {
+    style?.remove();
+    return;
+  }
+
+  if (!style) {
     style = document.createElement('style');
-    style.id = HIDE_CLASS;
-    style.textContent = `
-      ytd-rich-section-renderer,
-      ytd-reel-shelf-renderer {
-        display: none !important;
-      }
-
-      grid-shelf-view-model:has(a[href^="/shorts"]) {
-        display: none !important;
-      }
-
-      ytd-guide-entry-renderer:has(a[href^="/shorts"]) {
-        display: none !important;
-      }
-
-      ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]) {
-        display: none !important;
-      }
-
-      ytd-video-renderer:has(ytd-thumbnail-overlay-time-status-renderer[overlay-style="SHORTS"]) {
-        display: none !important;
-      }
-
-      ytd-guide-entry-renderer:has(a[title="Shorts"]) {
-        display: none !important;
-      }
-    `;
+    style.id = STYLE_ID;
     document.head.appendChild(style);
   }
 
-  if (!hide && style) {
-    style.remove();
-  }
+  style.textContent = `
+    ${hideShorts ? `
+      ytd-rich-section-renderer,
+      ytd-reel-shelf-renderer,
+      grid-shelf-view-model:has(a[href^="/shorts"]),
+      ytd-guide-entry-renderer:has(a[href^="/shorts"]),
+      ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),
+      ytd-guide-entry-renderer:has(a[title="Shorts"]),
+      ytd-video-renderer:has(ytd-thumbnail-overlay-time-status-renderer[overlay-style="SHORTS"]),
+      a[href^="/shorts"] {
+        display: none !important;
+      }
+    ` : ''}
+
+    ${hideHome ? `
+      ytd-browse[page-subtype="home"] ytd-rich-grid-renderer {
+        display: none !important;
+      }
+    ` : ''}
+  `;
 }
 
-chrome.storage.sync.get(['hideShorts'], r => applyHide(r.hideShorts));
-chrome.storage.onChanged.addListener(c => {
-  if (c.hideShorts) applyHide(c.hideShorts.newValue);
+chrome.storage.sync.get(['hideShorts', 'hideHome'], updateStyles);
+
+chrome.storage.onChanged.addListener(() => {
+  chrome.storage.sync.get(['hideShorts', 'hideHome'], updateStyles);
 });
